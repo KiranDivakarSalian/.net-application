@@ -29,4 +29,5 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 # Entry point (main project)
-ENTRYPOINT ["dotnet", "BulkyBookWeb.dll"]
+ENTRYPOINT ["dotnet", "BulkyWeb.dll"]
+
