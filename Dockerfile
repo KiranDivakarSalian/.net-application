@@ -2,29 +2,30 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution and project files first
-COPY Bulky.sln ./
-COPY BulkyWeb/BulkyWeb.csproj BulkyWeb/
-COPY Bulky.Models/Bulky.Models.csproj Bulky.Models/
-COPY Bulky.Utility/Bulky.Utility.csproj Bulky.Utility/
-COPY Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
+# Copy solution file
+COPY ../Bulky.sln ./
+
+# Copy project files
+COPY ../Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
+COPY ../Bulky.Models/Bulky.Models.csproj Bulky.Models/
+COPY ../Bulky.Utility/Bulky.Utility.csproj Bulky.Utility/
+COPY ./BulkyBookWeb.csproj BulkyWeb/
 
 # Restore dependencies
-RUN dotnet restore BulkyWeb/BulkyWeb.csproj
+RUN dotnet restore BulkyWeb/BulkyBookWeb.csproj
 
-# Copy everything else
-COPY . ./
+# Copy the rest of the source code
+COPY ../ ./
+WORKDIR /src/BulkyWeb
+RUN dotnet publish -c Release -o /app
 
-# Publish the app
-RUN dotnet publish BulkyWeb/BulkyWeb.csproj -c Release -o /app/out
-
-# Use the ASP.NET runtime image
+# Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/out ./
+COPY --from=build /app ./
 
-# Expose port for Render
+# Configure the app to listen on port 8080 (Render requirement)
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "BulkyWeb.dll"]
+ENTRYPOINT ["dotnet", "BulkyBookWeb.dll"]
