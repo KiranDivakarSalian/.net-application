@@ -2,29 +2,26 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution file
-COPY ../Bulky.sln ./
+# Copy solution file and restore dependencies
+COPY Bulky.sln ./
+COPY Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
+COPY Bulky.Models/Bulky.Models.csproj Bulky.Models/
+COPY Bulky.Utility/Bulky.Utility.csproj Bulky.Utility/
+COPY BulkyWeb/BulkyBookWeb.csproj BulkyWeb/
 
-# Copy project files
-COPY ../Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
-COPY ../Bulky.Models/Bulky.Models.csproj Bulky.Models/
-COPY ../Bulky.Utility/Bulky.Utility.csproj Bulky.Utility/
-COPY ./BulkyBookWeb.csproj BulkyWeb/
-
-# Restore dependencies
 RUN dotnet restore BulkyWeb/BulkyBookWeb.csproj
 
-# Copy the rest of the source code
-COPY ../ ./
+# Copy the entire project and build
+COPY . .
 WORKDIR /src/BulkyWeb
 RUN dotnet publish -c Release -o /app
 
-# Build runtime image
+# Use ASP.NET runtime to run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app ./
 
-# Configure the app to listen on port 8080 (Render requirement)
+# Render requires port 8080
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
