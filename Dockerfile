@@ -4,7 +4,7 @@ WORKDIR /src
 
 # Copy solution and project files
 COPY Bulky.sln ./Bulky.sln
-COPY Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
+COPY Bulky.DataAccess/BulkyBook.DataAccess.csproj Bulky.DataAccess/
 COPY Bulky.Models/BulkyBook.Models.csproj Bulky.Models/
 COPY Bulky.Utility/BulkyBook.Utility.csproj Bulky.Utility/
 COPY BulkyWeb/BulkyBookWeb.csproj BulkyWeb/
