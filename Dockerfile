@@ -6,7 +6,7 @@ WORKDIR /src
 COPY Bulky.sln ./
 COPY Bulky.DataAccess/Bulky.DataAccess.csproj Bulky.DataAccess/
 COPY Bulky.Models/Bulky.Models.csproj Bulky.Models/
-COPY Bulky.Utility/Bulky.Utility.csproj Bulky.Utility/
+COPY Bulky.Utility/BulkyBook.Utility.csproj/
 COPY BulkyWeb/BulkyBookWeb.csproj BulkyWeb/
 
 RUN dotnet restore BulkyWeb/BulkyBookWeb.csproj
