@@ -1,19 +1,23 @@
-# Use the official .NET SDK image to build the app
+# ===== Build Stage =====
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /source
 
-# Copy everything and restore dependencies
-COPY . ./
+# Copy csproj and restore dependencies
+COPY BulkyWeb/*.csproj .
 RUN dotnet restore
-RUN dotnet publish -c Release -o out
 
-# Use the ASP.NET runtime image to run the app
+# Copy the rest of the source code
+COPY BulkyWeb/. .
+RUN dotnet publish -c Release -o /app
+
+# ===== Runtime Stage =====
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/out ./
+COPY --from=build /app .
 
-# Expose port 8080 (Render expects apps to listen here)
+# Render uses port 8080
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
+# Run your app
 ENTRYPOINT ["dotnet", "BulkyBookWeb.dll"]
